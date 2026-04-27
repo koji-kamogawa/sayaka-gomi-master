@@ -21,7 +21,6 @@ def search_items(item_name, df):
         return None
     mask = df['品名'].str.contains(item_name, case=False, na=False)
     matches = df[mask].copy()
-    # ユニークなIDを追加（元のインデックスを利用）
     matches['_id'] = matches.index
     return matches
 
@@ -61,11 +60,9 @@ def main():
     # 複数一致時の選択UI
     if 'matches' in st.session_state and st.session_state.matches is not None:
         matches = st.session_state.matches
-        # 選択肢にIDを含めて重複を避ける
         options = [f"{row['品名']} (ID: {row['_id']})" for _, row in matches.iterrows()]
         selected_option = st.selectbox("複数の品目が見つかりました。該当するものを選択してください:", options, key="select_item")
         if st.button("この品目で決定"):
-            # 選択されたオプションからIDを抽出
             selected_id = int(selected_option.split('(ID: ')[1].strip(')'))
             selected_row = matches[matches['_id'] == selected_id].iloc[0]
             st.session_state.result = selected_row.to_dict()
@@ -74,11 +71,15 @@ def main():
 
     # 結果表示
     if 'result' in st.session_state:
-        if st.session_state.result is None:
+        result = st.session_state.result
+        if result is None:
             st.write('電話で、環境都市部環境クリーンセンターにお問い合わせください')
         else:
-            st.write(f"種別: {st.session_state.result['種別']}")
-            st.write(f"留意点: {st.session_state.result['留意点']}")
+            # 安全にキーにアクセス
+            shubetsu = result.get('種別', '情報なし')
+            chuiten = result.get('留意点', '情報なし')
+            st.write(f"種別: {shubetsu}")
+            st.write(f"留意点: {chuiten}")
 
 if __name__ == '__main__':
     main()
