@@ -17,10 +17,12 @@ def load_data():
             return None, "ファイルがアップロードされていません"
 
 def search_items(item_name, df):
-    if df is None:
+    if df is None or item_name.strip() == "":
         return None
     mask = df['品名'].str.contains(item_name, case=False, na=False)
-    matches = df[mask]
+    matches = df[mask].copy()
+    # ユニークなIDを追加（元のインデックスを利用）
+    matches['_id'] = matches.index
     return matches
 
 def main():
@@ -40,6 +42,8 @@ def main():
     if st.button('検索'):
         if item.strip() == "":
             st.warning("品名を入力してください")
+            st.session_state.pop('matches', None)
+            st.session_state.pop('result', None)
         else:
             matches = search_items(item, df)
             if matches is None or matches.empty:
@@ -51,15 +55,19 @@ def main():
             else:
                 st.session_state.matches = matches
                 st.session_state.result = None
-                st.session_state.selected_index = None
+                # 選択用の初期値を設定
+                st.session_state.selected_index = matches['_id'].iloc[0]
 
     # 複数一致時の選択UI
     if 'matches' in st.session_state and st.session_state.matches is not None:
         matches = st.session_state.matches
-        items_list = matches['品名'].tolist()
-        selected_item = st.selectbox("複数の品目が見つかりました。該当するものを選択してください:", items_list, key="select_item")
+        # 選択肢にIDを含めて重複を避ける
+        options = [f"{row['品名']} (ID: {row['_id']})" for _, row in matches.iterrows()]
+        selected_option = st.selectbox("複数の品目が見つかりました。該当するものを選択してください:", options, key="select_item")
         if st.button("この品目で決定"):
-            selected_row = matches[matches['品名'] == selected_item].iloc[0]
+            # 選択されたオプションからIDを抽出
+            selected_id = int(selected_option.split('(ID: ')[1].strip(')'))
+            selected_row = matches[matches['_id'] == selected_id].iloc[0]
             st.session_state.result = selected_row.to_dict()
             st.session_state.matches = None
             st.rerun()
