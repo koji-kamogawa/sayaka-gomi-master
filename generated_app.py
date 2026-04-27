@@ -25,7 +25,7 @@ def search_items(item_name, df):
     return matches
 
 def main():
-    st.title('ごみ分別アプリ')
+    st.title('逗子市ごみ分別マスター')
     if 'df' not in st.session_state:
         df, error = load_data()
         if df is not None:
