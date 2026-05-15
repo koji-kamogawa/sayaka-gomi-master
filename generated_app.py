@@ -2,6 +2,15 @@ import streamlit as st
 import pandas as pd
 import unicodedata
 
+# ポップアップ（ダイアログ）表示用の関数を定義
+@st.dialog("ごみ収集エリアマップ")
+def show_map():
+    try:
+        # 画像の横幅をダイアログの幅に合わせて表示（警告対応）
+        st.image("zushimap.png", width='stretch')
+    except Exception as e:
+        st.error(f"画像読み込みエラー: zushimap.png が見つからないか、エラーが発生しました。\n{e}")
+        
 def load_data():
     try:
         df = pd.read_csv('gomibetsu.csv', encoding='utf-8')
@@ -37,10 +46,18 @@ def search_items(item_name, df):
 def main():
     col_logo, col_title = st.columns([1, 8], vertical_alignment="center")
     with col_logo:
-        st.image('sayaka.png', width=70)
+        try:
+            st.image('sayaka.png', width=70)
+        except Exception:
+            st.write("LOGO") # sayaka.pngが無い場合のフォールバック
     with col_title:
         st.title("逗子市ごみ分別マスター")
     st.write('【非公式版】2026年4月28日時の公開データに基づいています')
+
+    # --- ここにマップ表示ボタンを追加 ---
+    if st.button("マップ表示 🗺️"):
+        show_map()
+    # ------------------------------------
 
     if 'df' not in st.session_state:
         df, error = load_data()
