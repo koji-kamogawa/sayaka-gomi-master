@@ -242,6 +242,6 @@ if user_input := st.chat_input("ゴミの分別について質問してくださ
 # フッター
 st.markdown("""
 <div style="text-align: center; padding: 20px; color: #888; font-size: 0.8rem;">
-    © 2024 ゴミ分別アシスタント | 正しい分別で美しい街づくり
+    © 2026 ゴミ分別アシスタント | 正しい分別で美しい街づくり
 </div>
 """, unsafe_allow_html=True)
