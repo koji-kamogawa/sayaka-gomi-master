@@ -106,6 +106,7 @@ df = load_garbage_data()
 # メインヘッダー
 st.markdown('<div class="main-header">🗑️ ゴミ分別アシスタント</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">ゴミの種別とお住まいの地区を選択して、回収日を確認しましょう</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">【非公式版】2026年4月28日時の公開データに基づいています</div>', unsafe_allow_html=True)
 
 # 画像表示（sayaka.png と 分別地区画像.jpg）
 col_img, col_main = st.columns([1, 3])
